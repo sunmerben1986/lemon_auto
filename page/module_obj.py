@@ -26,13 +26,14 @@ class Module_obj:
     event_selected = "59d8940f65fb595ebf39332bc6ed85f4"
     event_refresh = "1b6cc4125baf566fb7a585d03b3702eb"
     event_validate = "572cfd2ee16e11ea8aef84c5a603df26"
+    event_edit = "56b41daae16e11ea8aef84c5a603df26"
 
-    def create_page(self, page_uuid):
+    def create_page(self, page_uuid, context={}):
         data = {
             "command":"create_page",
             "data":{
                 "page":page_uuid,
-                "context":{}
+                "context":context
                 }
             }
         return data
@@ -107,6 +108,67 @@ class Module_obj:
                         "refresh_type":0
                         }
                     }
+                }
+            }
+        return data
+    
+    def delete_event_confirm(self, componenet_uuid, pk_list=[]):
+        data = {
+            "command":"component_event",
+            "data":{
+                "component":componenet_uuid,
+                "event":self.event_delete_confirm,
+                "params":{
+                    "pk_list":pk_list
+                    }
+                }
+            }
+        return data
+
+    def delete_event(self, component_uuid):
+        data = {
+            "command":"component_event",
+            "data":{
+                "component":component_uuid,
+                "event":self.event_delete,
+                "params":{}
+                }
+            }
+        return data
+    
+    def refresh_event(self, page_uuid, device_type=0):
+        data = {
+            "command":"component_event",
+            "data":{
+                "component":page_uuid,
+                "event":self.event_refresh,
+                "params":{
+                    "refresh_args":{"device_type":device_type}
+                    }
+                }
+            }
+        return data
+    
+    def any_event(self, component_uuid, event):
+        if event == "event_edit":
+            event_data = self.event_edit
+        data = {
+            "command":"component_event",
+            "data":{
+                "component":component_uuid,
+                "event":event_data,
+                "params":{}
+                }
+            }
+        return data
+    
+    def edit_event(self, page_uuid, component_uuid, context={}):
+        data = {
+            "command":"create_page",
+            "data":{
+                "page":page_uuid,
+                "parent_machine_id":component_uuid,
+                "context":context
                 }
             }
         return data

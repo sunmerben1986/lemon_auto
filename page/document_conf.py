@@ -10,6 +10,9 @@ class module_event_after:
     text1 = "5bb23692f5f45723bce47e9fec3d6618"
     text2 = "0c4a7fff118b5aebb2cfaa86e10138ac"
 
+class fe_module_eventb:
+    page_uuid = "c4a7b903c764551bbddc1e9d01b8f66e"
+
 class result_num:
     create_page = 3
     event_inited = 2
