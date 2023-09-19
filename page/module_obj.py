@@ -172,6 +172,22 @@ class Module_obj:
                 }
             }
         return data
+    
+    def save_event(self, page_uuid, component_uuid):
+        data = {
+            "command":"component_command",
+            "data":{
+                "component":page_uuid,
+                "command":"event",
+                "request_id":"3dfd0e27322651ca9c8b58ca39034e1f",
+                "params":{
+                    "control_uuid":component_uuid
+                    },
+                "index":0,
+                "handle":"click"
+                }
+            }
+    
 
 if __name__ == "__main__":
     pass

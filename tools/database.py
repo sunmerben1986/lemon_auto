@@ -1,6 +1,6 @@
 from peewee import *
 
-db = MySQLDatabase('t_test_8f646b_b858071', user='b858071bb83c_test_8f646b', password='zMn0O9rm', host='tlemon.lemonstudio.tech', port=3306)
+db = MySQLDatabase('t_test_8f646b_b858071', user='b858071bb83c_test_8f646b', password='UEghInx9', host='tlemon.lemonstudio.tech', port=3306)
 
 class record(Model):
     id = IntegerField()
