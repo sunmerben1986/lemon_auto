@@ -26,7 +26,7 @@ async def test_cloud_save():
         return True
     else:
         return False
-    
+
 #模型删除事件，删除前触发
 async def test_delete_inline_data():
     websocket = await connect()
