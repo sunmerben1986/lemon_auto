@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import asyncio
 
 async def func1():
@@ -22,3 +23,5 @@ if __name__ == '__main__':
     f3 = func3()
     tasks = [f1,f2,f3]
     asyncio.run(asyncio.wait(tasks))
+=======
+>>>>>>> db545f8e304c7c7d24ba83cf7d3ac2effb8078e3
