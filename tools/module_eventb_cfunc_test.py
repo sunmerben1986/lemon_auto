@@ -17,24 +17,35 @@ async def test_cloud_save():
     websocket = await connect()
     message_list = []
     moo = mo()
-    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), moo.save_event(mp.page_uuid, mp.save_btn)])
+    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), moo.btn_event(mp.page_uuid, mp.save_btn)])
     for message in message_list:
+        print(message)
         await websocket.send(json.dumps(message))
-    item = int(time.time())
+        while True:
+            response = await websocket.recv()
+            print(response)
+            res = await handle_message(response)
+            print(res)
+            if res is None:
+                break
+            elif res == 200:
+                pass
+            else:
+                break
     await websocket.close()
+    item = int(time.time())
     if isSucess("cloud_save", item):
         return True
     else:
         return False
 
-#模型删除事件，删除前触发
+#云函数触发模型删除事件，删除前触发
 async def test_delete_inline_data():
     websocket = await connect()
     message_list = []
     moo = mo()
     pk_list = get_pk_list()
-    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), 
-                         moo.delete_event_confirm(mp.data_list, pk_list), moo.delete_event(mp.data_list), moo.refresh_event(mp.page_uuid)])
+    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), moo.btn_event(mp.page_uuid, mp.delete_btn)])
     for message in message_list:
         await websocket.send(json.dumps(message))
     await websocket.close()
@@ -44,14 +55,33 @@ async def test_delete_inline_data():
     else:
         return False
     
-#模型取消事件，取消前触发
+#云函数更新模型数据，数据不存在，保存前触发
 async def test_delete_inline_data():
     websocket = await connect()
     message_list = []
     moo = mo()
     pk_dict = get_pk_dict()
     message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), 
-                         moo.edit_event(mp.page_uuid, mp.data_list, pk_dict), moo.any_event(fmp.page_uuid, "event_edit"), moo.refresh_event(mp.page_uuid)])
+                         moo.btn_event(mp.page_uuid, mp.update1_btn)])
+    print(message_list)
+    for message in message_list:
+        await websocket.send(json.dumps(message))
+    await websocket.close()
+    time_stamp = int(time.time())
+    if isSucess("delete", time_stamp):
+        return True
+    else:
+        return False
+
+#云函数更新模型数据，数据存在，保存前触发
+async def test_delete_inline_data():
+    websocket = await connect()
+    message_list = []
+    moo = mo()
+    pk_dict = get_pk_dict()
+    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), 
+                         moo.btn_event(mp.page_uuid, mp.update2_btn)])
+    print(message_list)
     for message in message_list:
         await websocket.send(json.dumps(message))
     await websocket.close()
@@ -110,4 +140,4 @@ async def handle_message(message):
         if len(inline_list) != 0:
             return inline_list[0]
 
-print(asyncio.run(test_cloud_save()))
+print(asyncio.run(test_delete_inline_data()))

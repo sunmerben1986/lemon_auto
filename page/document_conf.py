@@ -21,6 +21,9 @@ class module_event_after:
 class fe_module_eventb:
     page_uuid = "c4a7b903c764551bbddc1e9d01b8f66e"
 
+class fe_module_eventa:
+    page_uuid = "c4a7b903c764551bbddc1e9d01b8f66e"
+
 class result_num:
     create_page = 3
     event_inited = 2
