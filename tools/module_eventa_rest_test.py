@@ -140,5 +140,3 @@ async def handle_message(message):
             return inline_list[0]
 
 print(asyncio.run(test_delete_inline_data()))
-
-15771

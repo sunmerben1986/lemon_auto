@@ -173,7 +173,7 @@ class Module_obj:
             }
         return data
     
-    def save_event(self, page_uuid, component_uuid):
+    def btn_event(self, page_uuid, component_uuid):
         data = {
             "command":"component_command",
             "data":{
@@ -187,6 +187,7 @@ class Module_obj:
                 "handle":"click"
                 }
             }
+        return data
     
 
 if __name__ == "__main__":
