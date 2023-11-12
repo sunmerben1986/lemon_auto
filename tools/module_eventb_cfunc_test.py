@@ -21,17 +21,6 @@ async def test_cloud_save():
     for message in message_list:
         print(message)
         await websocket.send(json.dumps(message))
-        while True:
-            response = await websocket.recv()
-            print(response)
-            res = await handle_message(response)
-            print(res)
-            if res is None:
-                break
-            elif res == 200:
-                pass
-            else:
-                break
     await websocket.close()
     item = int(time.time())
     if isSucess("cloud_save", item):
@@ -140,4 +129,4 @@ async def handle_message(message):
         if len(inline_list) != 0:
             return inline_list[0]
 
-print(asyncio.run(test_delete_inline_data()))
+print(asyncio.run(test_cloud_save()))

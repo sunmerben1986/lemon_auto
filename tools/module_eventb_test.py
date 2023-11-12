@@ -148,3 +148,5 @@ async def handle_message(message):
         inline_list = v2.get("forms", [])
         if len(inline_list) != 0:
             return inline_list[0]
+
+print(asyncio.run(test_inline_sm()))
