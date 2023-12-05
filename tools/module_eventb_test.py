@@ -62,7 +62,7 @@ async def test_inline_sm_add():
             else:
                 break
     await websocket.close()
-    if isSucess("save", item):
+    if isSucess("normal_save", item):
         return True
     else:
         return False
@@ -149,4 +149,4 @@ async def handle_message(message):
         if len(inline_list) != 0:
             return inline_list[0]
 
-print(asyncio.run(test_inline_sm()))
+print(asyncio.run(test_inline_sm_add()))

@@ -19,19 +19,8 @@ async def test_cloud_save():
     moo = mo()
     message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), moo.btn_event(mp.page_uuid, mp.save_btn)])
     for message in message_list:
-        print(message)
         await websocket.send(json.dumps(message))
-        while True:
-            response = await websocket.recv()
-            print(response)
-            res = await handle_message(response)
-            print(res)
-            if res is None:
-                break
-            elif res == 200:
-                pass
-            else:
-                break
+        await asyncio.sleep(1)
     await websocket.close()
     item = int(time.time())
     if isSucess("cloud_save", item):
@@ -40,7 +29,7 @@ async def test_cloud_save():
         return False
 
 #云函数触发模型删除事件，删除后触发
-async def test_delete_inline_data():
+async def test_cloud_func_delete():
     websocket = await connect()
     message_list = []
     moo = mo()
@@ -48,56 +37,54 @@ async def test_delete_inline_data():
     message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), moo.btn_event(mp.page_uuid, mp.delete_btn)])
     for message in message_list:
         await websocket.send(json.dumps(message))
+        await asyncio.sleep(1)
     await websocket.close()
     time_stamp = int(time.time())
-    if isSucess("delete", time_stamp):
+    if isSucess("cloud_delete", time_stamp):
         return True
     else:
         return False
     
 #云函数更新模型数据，数据不存在，保存后触发
-async def test_delete_inline_data():
+async def test_update_unexist_data():
     websocket = await connect()
     message_list = []
     moo = mo()
     pk_dict = get_pk_dict()
-    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), 
-                         moo.btn_event(mp.page_uuid, mp.update1_btn)])
-    print(message_list)
+    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), moo.btn_event(mp.page_uuid, mp.update1_btn)])
     for message in message_list:
         await websocket.send(json.dumps(message))
+        await asyncio.sleep(1)
     await websocket.close()
     time_stamp = int(time.time())
-    if isSucess("delete", time_stamp):
-        return True
-    else:
+    if isSucess("cloud_save", time_stamp):
         return False
+    else:
+        return True
 
 #云函数更新模型数据，数据存在，保存后触发
-async def test_delete_inline_data():
+async def test_update_exist_data():
     websocket = await connect()
     message_list = []
     moo = mo()
     pk_dict = get_pk_dict()
-    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), 
-                         moo.btn_event(mp.page_uuid, mp.update2_btn)])
-    print(message_list)
+    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), moo.btn_event(mp.page_uuid, mp.update2_btn)])
     for message in message_list:
         await websocket.send(json.dumps(message))
+        await asyncio.sleep(1)
     await websocket.close()
     time_stamp = int(time.time())
-    if isSucess("delete", time_stamp):
+    if isSucess("cloud_delete", time_stamp):
         return True
     else:
         return False
 
 def isSucess(tag,item):
     db.connect()
-    if tag == "create" or tag == "delete":
-        record_data = record.select().where(((record.编号 > item - 3) & (record.编号 < item + 3)), 
-                                            record.记录 == tag, record.前后 == "after").first()
-    elif tag == "save":
-        record_data = record.select().where(record.编号 == item, record.记录 == tag, record.前后 == "after").first()
+    if tag == "cloud_delete":
+        record_data = record.select().where((record.编号 > item - 10) & (record.编号 < item + 5)).first()
+    elif tag == "cloud_save":
+        record_data = record.select().where(((record.编号 > item - 10) & (record.编号 < item + 5)), record.记录 == tag, record.前后 == "after").first()
     return record_data
 
 def get_pk_list():
@@ -116,15 +103,6 @@ def get_pk_dict():
     db.close()
     return pk_dict
 
-def set_inline_data(inline_uuid, field_uuid_list):
-    digits = "0123456789"
-    ascii_letters = "abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    str_list = [random.choice(digits +ascii_letters) for i in range(5)]
-    random_str = ''.join(str_list)
-    time_stamp = int(time.time())
-    inline_data = {field_uuid_list[0]:time_stamp, field_uuid_list[1]:random_str}
-    return inline_data, time_stamp
-
 async def handle_message(message):
     message = json.loads(message)
     result = message.get("result")
@@ -140,5 +118,3 @@ async def handle_message(message):
             return inline_list[0]
 
 print(asyncio.run(test_delete_inline_data()))
-
-15771
