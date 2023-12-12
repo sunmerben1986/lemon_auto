@@ -23,7 +23,11 @@ async def func3():
 #     tasks = [f1,f2,f3]
 #     asyncio.run(asyncio.wait(tasks))
 
-def test():
-    return True, {}
-a, b = test()
-print(a, b)
+# def test():
+#     return True, {}
+# a, b = test()
+# print(a, b)
+
+list_dict = {'1天':1,'2天':2,'3天':3,'5天':5,'6天':6}
+for k, v in list_dict.items():
+    print(k, v)
