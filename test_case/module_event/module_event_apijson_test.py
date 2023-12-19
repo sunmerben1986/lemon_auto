@@ -1,14 +1,11 @@
-import asyncio
 import json
-import sys
-import os
 import time
-import random
 import requests
+import unittest
 
 
-class apijsonTest():
-    def __init__(self) -> None:
+class apijsonTest(unittest.TestCase):
+    def setUp(self):
         self.url = 'https://tlemon.lemonstudio.tech:8443/8f646bbd87e25fecb72e128eb4f98c49test/api/auth/login.json'
         self.post_url = 'https://tlemon.lemonstudio.tech:8443/8f646bbd87e25fecb72e128eb4f98c49test/api/apijson/v1/post'
         self.put_url = 'https://tlemon.lemonstudio.tech:8443/8f646bbd87e25fecb72e128eb4f98c49test/api/apijson/v1/put'

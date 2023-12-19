@@ -1,5 +1,5 @@
 import asyncio
-from websocket_utils import connect
+from tools.websocket_utils import connect
 import json
 import sys
 import os

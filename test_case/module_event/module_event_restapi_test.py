@@ -1,10 +1,11 @@
 import json
 import time
 import requests
+import unittest
 
 
-class restapiTest():
-    def __init__(self) -> None:
+class restapiTest(unittest.TestCase):
+    def setUp(self):
         self.url = 'https://tlemon.lemonstudio.tech:8443/8f646bbd87e25fecb72e128eb4f98c49test/b858071bb83c5aa0bd9a40ce09572d9e/restful/v1/'
         self.querystring = {"tenant_uuid": "b858071bb83c5aa0bd9a40ce09572d9e"}
         self.time_stamp = int(time.time())
