@@ -17,7 +17,7 @@ class restapiTest(unittest.TestCase):
             "data":{
                 "编号":self.time_stamp,"类型":"restapi insert"}
                 }
-        res = requests.post(url=post_url, data=json.dumps(data))
+        res = requests.post(url=post_url, data=json.dumps(data), auth=("周斌".encode("utf-8"), "zbfight@321"))
         if res.json().get("code") == 200:
             assert self.is_success(self.time_stamp)
     
@@ -26,22 +26,22 @@ class restapiTest(unittest.TestCase):
         post_url = self.url + tag
         data = {
             "data":{
-                "target":"1702346338","destination":"restapi update"}
+                "target":self.time_stamp,"destination":"restapi update"}
                 }
-        res = requests.post(url=post_url, data=json.dumps(data))
+        res = requests.post(url=post_url, data=json.dumps(data), auth=("周斌".encode("utf-8"), "zbfight@321"))
         if res.json().get("code") == 200:
-            assert self.is_success("1702346338")
+            assert self.is_success(self.time_stamp)
 
     def test_delete_data(self):
         tag = "delete"
         post_url = self.url + tag
         data = {
             "data":{
-                "target":"1702346338"}
+                "target":self.time_stamp}
                 }
-        res = requests.post(url=post_url, data=json.dumps(data))
+        res = requests.post(url=post_url, data=json.dumps(data), auth=("周斌".encode("utf-8"), "zbfight@321"))
         if res.json().get("code") == 200:
-            if not self.is_success("1702346338"):
+            if not self.is_success(self.time_stamp):
                 assert True
             else:
                 assert False
@@ -52,7 +52,7 @@ class restapiTest(unittest.TestCase):
         data = {
             "data":{"target": querystring}
         }
-        res = requests.post(post_url, data=json.dumps(data))
+        res = requests.post(post_url, data=json.dumps(data), auth=("周斌".encode("utf-8"), "zbfight@321"))
         return res.json()
 
     def is_success(self, querystring):
@@ -64,5 +64,7 @@ class restapiTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    aa = restapiTest()
-    print(aa.test_delete_data())
+    runner = unittest.TextTestRunner()
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(restapiTest))
+    runner.run(suite)
