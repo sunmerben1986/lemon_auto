@@ -5,6 +5,7 @@ import unittest
 
 
 class apijsonTest(unittest.TestCase):
+    time_stamp = int(time.time())
     def setUp(self):
         self.url = 'https://tlemon.lemonstudio.tech:8443/8f646bbd87e25fecb72e128eb4f98c49test/api/auth/login.json'
         self.post_url = 'https://tlemon.lemonstudio.tech:8443/8f646bbd87e25fecb72e128eb4f98c49test/api/apijson/v1/post'
@@ -19,7 +20,6 @@ class apijsonTest(unittest.TestCase):
         self.querystring = {"tenant_uuid": "b858071bb83c5aa0bd9a40ce09572d9e"}
         self.header = {"Authorization": f"Bearer {self.token}",
                 "content-type": "application/json"}
-        self.time_stamp = int(time.time())
 
     def get_token(self):
         response = requests.post(url=self.url, data=json.dumps(self.data))
@@ -44,15 +44,18 @@ class apijsonTest(unittest.TestCase):
             assert self.is_success(f"{self.time_stamp}", "事件记录")
     
     def test_update_data(self):
-        res = self.query_data("1701855919", "模型事件测试事件前")
+        res = self.query_data(self.time_stamp, "模型事件测试事件前")
         id = res.get("模型事件测试事件前", {}).get("id")
-        data = {
-            "模型事件测试事件前":{
-                    "id": id,
-                    "记录": "apijson更新"
-                },
-            "tag": "模型事件测试事件前"
-        }
+        if id:
+            data = {
+                "模型事件测试事件前":{
+                        "id": id,
+                        "备注": "apijson更新"
+                    },
+                "tag": "模型事件测试事件前"
+            }
+        else:
+            assert False
         response = requests.post(url=self.put_url, headers=self.header, data=json.dumps(data), params=self.querystring)
         res = json.loads(response.text)
         if res.get("code") == 200:
@@ -78,5 +81,7 @@ class apijsonTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    aa = apijsonTest()
-    print(aa.test_update_data())
+    runner = unittest.TextTestRunner()
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(apijsonTest))
+    runner.run(suite)
