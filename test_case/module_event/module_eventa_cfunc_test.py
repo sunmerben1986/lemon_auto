@@ -1,15 +1,16 @@
 import asyncio
-from tools.websocket_utils import connect
 import json
 import sys
 import os
 import time
 import random
+import unittest
 sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
 from page.module_obj import Module_obj as mo
 from page.document_conf import module_event_after as mp
 from page.document_conf import fe_module_eventa as fmp
 from tools.database import db, record, module_eventa_tmp
+from tools.websocket_utils import connect
 
 
 #云函数触发模型保存事件，保存后触发
@@ -116,3 +117,10 @@ async def handle_message(message):
         inline_list = v2.get("forms", [])
         if len(inline_list) != 0:
             return inline_list[0]
+
+
+if __name__ == "__main__":
+    runner = unittest.TextTestRunner()
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(test_cloud_save))
+    runner.run(suite)
