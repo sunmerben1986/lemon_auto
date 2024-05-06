@@ -10,5 +10,12 @@
 # import random
 
 # random.choice()
-for item in range(2):
-    print(2)
+# for item in range(2):
+#     print(2)
+
+def f():
+    pass
+code = f.__code__
+print(code.co_code)
+print(code.co_stacksize)
+print(dir(code))

@@ -6,9 +6,9 @@ import os
 import time
 import random
 sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
-from page.module_obj import Module_obj as mo
-from page.document_conf import module_event_before as mp
-from page.document_conf import fe_module_eventb as fmp
+from page.base_utils import Module_obj as mo
+from page.page_conf import module_event_before as mp
+from page.page_conf import fe_module_eventb as fmp
 from tools.database import db, record, module_eventb_tmp
 
 
