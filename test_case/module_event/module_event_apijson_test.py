@@ -59,7 +59,7 @@ class apijsonTest(unittest.TestCase):
         response = requests.post(url=self.put_url, headers=self.header, data=json.dumps(data), params=self.querystring)
         res = json.loads(response.text)
         if res.get("code") == 200:
-            assert self.is_success(f"1701855919", "事件记录")
+            assert self.is_success(f"{self.time_stamp}", "事件记录")
 
     def query_data(self, querystring, dbname):
         data = {

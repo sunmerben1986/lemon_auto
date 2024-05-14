@@ -1,152 +1,73 @@
-import asyncio
 from tools.websocket_utils import connect
 import json
-import sys
-import os
 import time
-import random
-sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
-from page.base_utils import Module_obj as mo
-from page.page_conf import module_event_before as mp
-from page.page_conf import fe_module_eventb as fmp
-from tools.database import db, record, module_eventb_tmp
+import unittest
+from page.base_utils import base_utils as bu
+from page.page_conf import module_event_before as mp,fe_module_eventb as fmp
+from tools.database import db, record
 
 
 #模型创建事件，创建前触发
-async def test_inline_sm():
-    websocket = await connect()
-    message_list = []
-    moo = mo()
-    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list)])
-    for message in message_list:
-        await websocket.send(json.dumps(message))
-        while True:
-            response = await websocket.recv()
-            res = await handle_message(response)
-            if res is None:
-                break
-            elif res != 200 and len(res) == 32:            
-                inline_create = moo.create_inline(mp.data_list, res)
-                message_list.append(inline_create)
-            elif res == 200:
-                pass
-            else:
-                break
-    await websocket.close()
-    if isSucess("create", int(time.time())):
-        return True
-    else:
-        return False
-    
-#模型保存事件，保存前触发
-async def test_inline_sm_add():
-    websocket = await connect()
-    message_list = []
-    moo = mo()
-    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list)])
-    for message in message_list:
-        await websocket.send(json.dumps(message))
-        while True:
-            response = await websocket.recv()
-            res = await handle_message(response)
-            if res is None:
-                break
-            elif res != 200 and len(res) == 32:            
-                inline_create = moo.create_inline(mp.data_list, res)
-                inline_data, item = set_inline_data(res, [mp.text1, mp.text2])
-                inline_data = moo.add_inline_data(mp.data_list, res, inline_data)
-                message_list.append(inline_create)
-                message_list.append(inline_data)
-            elif res == 200:
-                pass
-            else:
-                break
-    await websocket.close()
-    if isSucess("normal_save", item):
-        return True
-    else:
-        return False
-    
-#模型删除事件，删除前触发
-async def test_delete_inline_data():
-    websocket = await connect()
-    message_list = []
-    moo = mo()
-    pk_list = get_pk_list()
-    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), 
-                         moo.delete_event_confirm(mp.data_list, pk_list), moo.delete_event(mp.data_list), moo.refresh_event(mp.page_uuid)])
-    for message in message_list:
-        await websocket.send(json.dumps(message))
-    await websocket.close()
-    time_stamp = int(time.time())
-    if isSucess("delete", time_stamp):
-        return True
-    else:
-        return False
-    
-#模型取消事件，取消前触发
-async def test_delete_inline_data():
-    websocket = await connect()
-    message_list = []
-    moo = mo()
-    pk_dict = get_pk_dict()
-    message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), 
-                         moo.edit_event(mp.page_uuid, mp.data_list, pk_dict), moo.any_event(fmp.page_uuid, "event_edit"), moo.refresh_event(mp.page_uuid)])
-    for message in message_list:
-        await websocket.send(json.dumps(message))
-    await websocket.close()
-    time_stamp = int(time.time())
-    if isSucess("delete", time_stamp):
-        return True
-    else:
-        return False
+class module_eventb_test(unittest.IsolatedAsyncioTestCase):
+    async def asyncSetUp(self):
+        self.moo = bu()
+        if not hasattr(type(self), '_is_setup'):
+            type(self)._is_setup = True
+            self.websocket = await connect()
+            message_list = []
+            self.timestamp = int(time.time())
+            type(self)._timestamp = self.timestamp
+            message_list.extend([self.moo.create_page(mp.page_uuid), 
+                                 self.moo.base_event(mp.data_list, "event_inited"),
+                                 "create_inline",
+                                 "save_inline",
+                                 self.moo.page_nation(mp.data_list)
+                                 ])
+            pk = self.moo.get_pk("list", "before")
+            message_list.append(self.moo.delete_event_confirm(mp.data_list, pk))
+            message_list.append(self.moo.base_event(mp.data_list, "event_delete"))
+            for message in message_list:
+                await self.websocket.send(json.dumps(message))
+                if not hasattr(type(self), '_is_created'):
+                    while True:
+                        response = await self.websocket.recv()
+                        res = self.moo.handle_message(response)
+                        if res is None:
+                            break
+                        elif res == 200:
+                            pass
+                        elif res != 200 and len(res) == 32:            
+                            inline_create = self.moo.create_inline(mp.data_list, res)
+                            inline_data = self.moo.set_inline_data(self.timestamp, [mp.text1, mp.text2])
+                            inline_data = self.moo.add_inline_data(mp.data_list, res, inline_data)
+                            message_list[2] = inline_create
+                            message_list[3] = inline_data
+                            type(self)._is_created = True
+                            break
+                        else:
+                            break
+            await self.websocket.close()
 
-def isSucess(tag,item):
-    db.connect()
-    if tag == "create" or tag == "delete":
-        print(item)
-        record_data = record.select().where((record.编号 > item - 10) & (record.编号 < item + 5)).first()
-    elif tag == "save":
-        record_data = record.select().where(record.编号 == item, record.记录 == tag, record.前后 == "before").first()
-    return record_data
 
-def get_pk_list():
-    db.connect()
-    pks = module_eventb_tmp.select(module_eventb_tmp.id)
-    pk_list = []
-    for pk in pks:
-        pk_list.append(pk.id)
-    db.close()
-    return pk_list
+    #模型创建事件，创建前触发
+    async def test_01_inline_sm(self):
+        response = self.moo.isSucess("create", type(self)._timestamp, "before")
+        self.assertIsNotNone(response)
+        
+    #模型保存事件，保存前触发
+    async def test_02_inline_sm_add(self):
+        response = self.moo.isSucess("normal_save", type(self)._timestamp, "before")
+        self.assertIsNotNone(response)
+        
+    #模型删除事件，删除前触发
+    async def test_03_delete_inline_data(self):
+        response = self.moo.isSucess("normal_delete", type(self)._timestamp, "before")
+        self.assertIsNotNone(response)
 
-def get_pk_dict():
-    db.connect()
-    pk = module_eventb_tmp.select(module_eventb_tmp.id).first()
-    pk_dict = {"pk": pk}
-    db.close()
-    return pk_dict
 
-def set_inline_data(inline_uuid, field_uuid_list):
-    digits = "0123456789"
-    ascii_letters = "abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    str_list = [random.choice(digits +ascii_letters) for i in range(5)]
-    random_str = ''.join(str_list)
-    time_stamp = int(time.time())
-    inline_data = {field_uuid_list[0]:time_stamp, field_uuid_list[1]:random_str}
-    return inline_data, time_stamp
 
-async def handle_message(message):
-    message = json.loads(message)
-    result = message.get("result")
-    if result == 'on_open':
-        return message.get("code")
-    elif result == "create_page":
-        return message.get("code")
-    elif result == "component_event":
-        v1 = message.get("data")["values"][0]
-        v2 = v1.get("value")
-        inline_list = v2.get("forms", [])
-        if len(inline_list) != 0:
-            return inline_list[0]
-
-print(asyncio.run(test_inline_sm_add()))
+if __name__ == "__main__":
+    runner = unittest.TextTestRunner()
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(module_eventb_test))
+    runner.run(suite)

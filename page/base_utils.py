@@ -1,6 +1,6 @@
 import json
 import random
-from tools.database import db, record, module_eventa_tmp
+from tools.database import db, record, module_eventa_tmp, module_eventb_tmp
 
 class base_utils(object):
     event_inited = "9ceef9dcd6da11ea8a7f84c5a603df26"
@@ -211,11 +211,13 @@ class base_utils(object):
         inline_data = {field_uuid_list[0]:time_stamp, field_uuid_list[1]:random_str}
         return inline_data
 
-    def get_pk(self, res_type):
+    def get_pk(self, res_type, call_at):
         db.connect()
-        pks = module_eventa_tmp.select(module_eventa_tmp.id)
+        if call_at == "before":
+            pks = module_eventb_tmp.select(module_eventb_tmp.id)
+        elif call_at == "after":
+            pks = module_eventa_tmp.select(module_eventa_tmp.id)
         db.close()
-        print(db.close())
         if res_type == "list":
             pk_list = []
             for pk in pks:
@@ -225,14 +227,14 @@ class base_utils(object):
             pk_dict = {"pk": list(pks)[0].id}
             return pk_dict
     
-    def isSucess(self,tag,item):
+    def isSucess(self,tag,item,call_at):
         print(db.close())
         db.connect()
-        if tag == "create" or tag == "delete":
+        if tag == "create" or tag == "normal_delete":
             record_data = record.select().where(((record.编号 > item - 30) & (record.编号 < item + 30)), 
-                                                record.记录 == tag, record.前后 == "after").first()
+                                                record.记录 == tag, record.前后 == call_at).first()
         elif tag == "normal_save" or tag == "cancel":
-            record_data = record.select().where(record.编号 == item, record.记录 == tag, record.前后 == "after").first()
+            record_data = record.select().where(record.编号 == item, record.记录 == tag, record.前后 == call_at).first()
         else:
             record_data = None
         db.close()
@@ -240,4 +242,4 @@ class base_utils(object):
 
 if __name__ == "__main__":
     bu = base_utils()
-    print(bu.isSucess("normal_save", 1711276969))
+    print(bu.get_pk("list", "after"))
