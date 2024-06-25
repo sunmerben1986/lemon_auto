@@ -4,28 +4,28 @@ import time
 import unittest
 from page.base_utils import base_utils as bu
 from page.page_conf import module_event_after as mp, fe_module_eventa as fmp
-from tools.database import db, record, module_eventa_tmp
+from tools.database import db
 from tools.websocket_utils import connect
 
 class module_eventa_cfunc_test(unittest.IsolatedAsyncioTestCase):
     #云函数触发模型保存事件，保存后触发
-    async def test_01_cloud_save():
+    async def test_01_cloud_save(self):
         websocket = await connect()
         message_list = []
         moo = bu()
-        message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list), moo.btn_event(mp.page_uuid, mp.save_btn)])
+        message_list.extend([moo.create_page(mp.page_uuid), moo.base_event(mp.data_list,"event_inited"), moo.btn_event(mp.page_uuid, mp.save_btn)])
         for message in message_list:
             await websocket.send(json.dumps(message))
             await asyncio.sleep(1)
         await websocket.close()
         item = int(time.time())
-        if isSucess("cloud_save", item):
+        if moo.isSucess("cloud_save", item, "after"):
             return True
         else:
             return False
 
     #云函数触发模型删除事件，删除后触发
-    async def test_04_cloud_func_delete():
+    async def test_04_cloud_func_delete(self):
         websocket = await connect()
         message_list = []
         moo = bu()
@@ -35,13 +35,13 @@ class module_eventa_cfunc_test(unittest.IsolatedAsyncioTestCase):
             await asyncio.sleep(1)
         await websocket.close()
         time_stamp = int(time.time())
-        if isSucess("cloud_delete", time_stamp):
+        if moo.isSucess("cloud_delete", time_stamp, "after"):
             return True
         else:
             return False
         
     #云函数更新模型数据，数据不存在，保存后触发
-    async def test_02_update_unexist_data():
+    async def test_02_update_unexist_data(self):
         websocket = await connect()
         message_list = []
         moo = bu()
@@ -51,13 +51,13 @@ class module_eventa_cfunc_test(unittest.IsolatedAsyncioTestCase):
             await asyncio.sleep(1)
         await websocket.close()
         time_stamp = int(time.time())
-        if isSucess("cloud_save", time_stamp):
+        if moo.isSucess("cloud_save", time_stamp, "after"):
             return False
         else:
             return True
 
     #云函数更新模型数据，数据存在，保存后触发
-    async def test_03_update_exist_data():
+    async def test_03_update_exist_data(self):
         websocket = await connect()
         message_list = []
         moo = bu()
@@ -67,7 +67,7 @@ class module_eventa_cfunc_test(unittest.IsolatedAsyncioTestCase):
             await asyncio.sleep(1)
         await websocket.close()
         time_stamp = int(time.time())
-        if isSucess("cloud_delete", time_stamp):
+        if moo.isSucess("cloud_delete", time_stamp, "after"):
             return True
         else:
             return False
