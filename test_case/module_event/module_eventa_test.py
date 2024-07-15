@@ -5,14 +5,12 @@ import os
 import time
 import random
 import unittest
+# sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 from tools.websocket_utils import connect
-sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-print(sys.path)
 from page.module_obj import Module_obj as mo
 from page.document_conf import module_event_after as mp
 from page.document_conf import fe_module_eventa as fmp
 from tools.database import db, record, module_eventa_tmp
-
 
 
 class module_eventa_test(unittest.IsolatedAsyncioTestCase):
@@ -23,6 +21,7 @@ class module_eventa_test(unittest.IsolatedAsyncioTestCase):
         moo = mo()
         message_list.extend([moo.create_page(mp.page_uuid), moo.init_event(mp.data_list)])
         for message in message_list:
+            print(message)
             await websocket.send(json.dumps(message))
             while True:
                 response = await websocket.recv()

@@ -1,14 +1,6 @@
-# 计算两个日期的间隔函数
-# 2018-01-01 2018-01-02
-# 1
-# 2018-01-01 2018-01-01
-# 0
-# 2018-01-01 2017-12-31
-# -1
-# 2018-01-01 2017-12-30
+import json
+ 
 
-# import random
-
-# random.choice()
-for item in range(2):
-    print(2)
+json_data = str({"key1": "value1", 123: "value2"})  # 这里的123是非字符串键
+json_data = json.dumps(json_data)
+decoded_data = json.loads(json_data)
