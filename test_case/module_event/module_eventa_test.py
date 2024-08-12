@@ -1,6 +1,7 @@
 import json
 import time
 import unittest
+# sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 from tools.websocket_utils import connect
 from page.base_utils import base_utils as bu
 from page.page_conf import module_event_after as mp, fe_module_eventa as fmp

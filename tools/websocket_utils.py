@@ -12,10 +12,12 @@ async def connect():
     
     url = f"wss://{host}/ws?token={parameter1}&tenant_uuid={parameter2}&SessionId={parameter4}&device_type={parameter3}"
     websocket = await websockets.connect(url)
+    print(f"Connected to {url}")
     return websocket
 
 async def send_request(websocket, message):
     await websocket.send(json.dumps(message))
+    print(f"Sent: {message}")
     while True:
         response = await websocket.recv()
         print(response)
