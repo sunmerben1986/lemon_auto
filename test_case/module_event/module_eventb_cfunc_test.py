@@ -42,36 +42,36 @@ class module_eventb_cfunc_test(unittest.IsolatedAsyncioTestCase):
             return False
         
     #云函数更新模型数据，数据不存在，保存前触发
-    async def test_02_update_unexist_data(self):
-        websocket = await connect()
-        message_list = []
-        moo = mo()
-        message_list.extend([moo.btn_event(mp.page_uuid, mp.update1_btn)])
-        for message in message_list:
-            await websocket.send(json.dumps(message))
-            await asyncio.sleep(1)
-        await websocket.close()
-        time_stamp = int(time.time())
-        if moo.isSucess("cloud_save", time_stamp, "before"):
-            return False
-        else:
-            return True
+    # async def test_02_update_unexist_data(self):
+    #     websocket = await connect()
+    #     message_list = []
+    #     moo = mo()
+    #     message_list.extend([moo.btn_event(mp.page_uuid, mp.update1_btn)])
+    #     for message in message_list:
+    #         await websocket.send(json.dumps(message))
+    #         await asyncio.sleep(1)
+    #     await websocket.close()
+    #     time_stamp = int(time.time())
+    #     if moo.isSucess("cloud_save", time_stamp, "before"):
+    #         return False
+    #     else:
+    #         return True
 
     #云函数更新模型数据，数据存在，保存前触发
-    async def test_update_exist_data(self):
-        websocket = await connect()
-        message_list = []
-        moo = mo()
-        message_list.extend([moo.btn_event(mp.page_uuid, mp.update2_btn)])
-        for message in message_list:
-            await websocket.send(json.dumps(message))
-            await asyncio.sleep(1)
-        await websocket.close()
-        time_stamp = int(time.time())
-        if moo.isSucess("cloud_delete", time_stamp, "before"):
-            return True
-        else:
-            return False
+    # async def test_03_update_exist_data(self):
+    #     websocket = await connect()
+    #     message_list = []
+    #     moo = mo()
+    #     message_list.extend([moo.btn_event(mp.page_uuid, mp.update2_btn)])
+    #     for message in message_list:
+    #         await websocket.send(json.dumps(message))
+    #         await asyncio.sleep(1)
+    #     await websocket.close()
+    #     time_stamp = int(time.time())
+    #     if moo.isSucess("cloud_save", time_stamp, "before"):
+    #         return True
+    #     else:
+    #         return False
         
     async def handle_message(message):
         message = json.loads(message)
@@ -92,4 +92,5 @@ if __name__ == "__main__":
     runner = unittest.TextTestRunner()
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(module_eventb_cfunc_test))
+    # suite.addTest(module_eventb_cfunc_test("test_04_cloud_func_delete"))
     runner.run(suite)

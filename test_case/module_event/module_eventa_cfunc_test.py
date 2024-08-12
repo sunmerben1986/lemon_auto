@@ -67,7 +67,7 @@ class module_eventa_cfunc_test(unittest.IsolatedAsyncioTestCase):
             await asyncio.sleep(1)
         await websocket.close()
         time_stamp = int(time.time())
-        if moo.isSucess("cloud_delete", time_stamp, "after"):
+        if moo.isSucess("cloud_save", time_stamp, "after"):
             return True
         else:
             return False
